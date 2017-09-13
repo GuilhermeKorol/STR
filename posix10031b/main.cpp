@@ -63,10 +63,11 @@ int main() {
 							printf("t_set.tarefas[%d][%d].id = %c\n", i, j, t_set.tarefas[i][j].id);
 							printf("t_set.tarefas[%d][%d].c  = %d\n", i, j, t_set.tarefas[i][j].c);
 							printf("t_set.tarefas[%d][%d].s  = %d\n\n", i, j, t_set.tarefas[i][j].s);
+							printf("tempo = %d\n", tempo);
 						#endif
 					  // Se for sched_fifo
 						if (t_set.tarefas[i][j].sched == 1) {
-							if (t_set.tarefas[i][j].s >= tempo) {
+							if (t_set.tarefas[i][j].s <= tempo) {
 								// Tarefa j ganha cpu
 								grade[tempo++] = t_set.tarefas[i][j].id;
 								// Computacao da tarefa j decrementa
@@ -79,7 +80,7 @@ int main() {
 							}
 						} // Se for sched_rr
 						else {
-							if (t_set.tarefas[i][j].s >= tempo) {
+							if (t_set.tarefas[i][j].s <= tempo) {
 								// Tarefa j ganha cpu
 								grade[tempo++] = t_set.tarefas[i][j].id;
 								// Computacao da tarefa j decrementa
