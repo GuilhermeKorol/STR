@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <vector>
 #include <algorithm>
+#include <string.h>
 
 #define MAX_TAREFAS    26
 #define MAX_GRADE      8192
 #define MIN_PRIORIDADE 32
-// #define DEBUG
+#define DEBUG
 
 typedef struct {
-	char	   id;
+	char	 id;
 	unsigned c;
 	unsigned s;
 	unsigned p;
@@ -17,7 +18,6 @@ typedef struct {
 
 // Um vetor de TAREFAs para cada prioridade
 typedef struct {
-	// std::vector<std::vector<TAREFA> > tarefas(MIN_PRIORIDADE, vector<TAREFA>(MIN_PRIORIDADE));
 	std::vector<TAREFA> tarefas[MIN_PRIORIDADE];
 } P_TAREFAS;
 
@@ -29,12 +29,15 @@ int main() {
 	unsigned i,j;
 	unsigned sp_temp;
 	char     grade[MAX_GRADE+1] = {0};
-  unsigned tempo = 0;
-	char		 pronto;
+    unsigned tempo = 0;
 
 	/* Inicia leitura... */
 	scanf("%u",&num_tarefas);
 	while (num_tarefas > 0) {
+
+    #ifdef DEBUG
+		printf("\nNum_leituras %d\n", num_tarefas);
+    #endif
 
 		/* LEITURA */
 		for (i=0;i<num_tarefas;++i) {
@@ -42,6 +45,14 @@ int main() {
 			temp_t.id = 'A'+i;
 			scanf("%u %u %u %u",&(temp_t.c), &(temp_t.s),
 						&(temp_t.p), &(temp_t.sched));
+            //#ifdef DEBUG
+            //  printf("t_set.tarefas[%d][%d].id = %c\n", i, j, temp_t.id);
+			//  printf("t_set.tarefas[%d][%d].c  = %d\n", i, j, temp_t.c);
+    		//	printf("t_set.tarefas[%d][%d].s  = %d\n", i, j, temp_t.s);
+    		//	printf("t_set.tarefas[%d][%d].p  = %d\n", i, j, temp_t.p);
+    		//	printf("t_set.tarefas[%d][%d].sc = %d\n", i, j, temp_t.sched);
+    		//	printf("tempo = %d\n", tempo);
+            //#endif
 
 			if (temp_t.s == 0){
 				t_set.tarefas[temp_t.p-1].push_back(temp_t);
@@ -50,22 +61,23 @@ int main() {
 			}
 		}
 
-		// #ifdef DEBUG
-		// for (i=0;i<MIN_PRIORIDADE-1;++i) {
-		// 	if (t_set.tarefas[i].size() > 0) {
-		// 		printf("\nt_set.tarefas[%d].size() = %ld\n", i, t_set.tarefas[i].size());
-		// 		for (j=0;j<t_set.tarefas[i].size();++j) {
-		// 				printf("t_set.tarefas[%d][%d].id = %c\n", i, j, t_set.tarefas[i][j].id);
-		// 				printf("t_set.tarefas[%d][%d].c  = %d\n", i, j, t_set.tarefas[i][j].c);
-		// 				printf("t_set.tarefas[%d][%d].s  = %d\n", i, j, t_set.tarefas[i][j].s);
-		// 				printf("t_set.tarefas[%d][%d].p  = %d\n", i, j, t_set.tarefas[i][j].p);
-		// 				printf("t_set.tarefas[%d][%d].sc = %d\n", i, j, t_set.tarefas[i][j].sched);
-		// 				printf("tempo = %d\n", tempo);
-		// 		}
-		// 	}
-		// }
-		// printf("\nSTART\n");
-		// #endif
+		#ifdef DEBUG
+        printf("espera.size() = %ld\n", espera.size());
+		for (i=0;i<MIN_PRIORIDADE-1;++i) {
+            printf("t_set.tarefas[%d].size() = %ld\n", i, t_set.tarefas[i].size());
+			if (t_set.tarefas[i].size() > 0) {
+		 		for (j=0;j<t_set.tarefas[i].size();++j) {
+		 				printf("\nt_set.tarefas[%d][%d].id = %c\n", i, j, t_set.tarefas[i][j].id);
+		 				printf("t_set.tarefas[%d][%d].c  = %d\n", i, j, t_set.tarefas[i][j].c);
+		 				printf("t_set.tarefas[%d][%d].s  = %d\n", i, j, t_set.tarefas[i][j].s);
+		 				printf("t_set.tarefas[%d][%d].p  = %d\n", i, j, t_set.tarefas[i][j].p);
+		 				printf("t_set.tarefas[%d][%d].sc = %d\n", i, j, t_set.tarefas[i][j].sched);
+		 				printf("tempo = %d\n", tempo);
+		 		}
+			}
+		}
+		printf("\nSTART\n");
+		#endif
 
 
 		tempo = 0;
@@ -74,15 +86,18 @@ int main() {
 			// Percorre prioridades da mais alta a mais baixa
 			i = 0;
 			while (i<MIN_PRIORIDADE-1) {
+                if (i == MIN_PRIORIDADE) {
+                    tempo++;
+                }
 				for(j=0; j < espera.size(); ++j) {
-					// Veriica se existe aluma tarefa para ser incluida na fila de prontos
+					// Verifica se existe aluma tarefa para ser incluida na fila de prontos
 					if (espera[j].s == tempo) {
 						sp_temp = espera[j].p-1;
 						t_set.tarefas[sp_temp].push_back(espera[j]);
-						#ifdef DEBUG
-							printf("tarefa %c entrou em %d\n", t_set.tarefas[sp_temp].end()->id, tempo);
-						#endif
-						espera[j].s = 8193;
+						// #ifdef DEBUG
+						//	printf("tarefa %c entrou em %d\n", t_set.tarefas[sp_temp].end()->id, tempo);
+						// #endif
+                        espera.erase(espera.begin()+j);
 						if (sp_temp < i) {
 							// se a tarefa que chegou tem prioridade maior que a atual
 							i = sp_temp;
@@ -125,15 +140,15 @@ int main() {
 								}
 							}
 						}
-						#ifdef DEBUG
-							printf("t_set.tarefas[%d][%d].id = %c\n", i, 0, t_set.tarefas[i][0].id);
-							printf("t_set.tarefas[%d][%d].c  = %d\n", i, 0, t_set.tarefas[i][0].c);
-							printf("t_set.tarefas[%d][%d].s  = %d\n", i, 0, t_set.tarefas[i][0].s);
-							printf("t_set.tarefas[%d][%d].p  = %d\n", i, 0, t_set.tarefas[i][0].p);
-							printf("t_set.tarefas[%d][%d].sc = %d\n", i, 0, t_set.tarefas[i][0].sched);
-							printf("Grade [%u]: ",tempo);
-							printf("%s\n\n",grade);
-						#endif
+						//#ifdef DEBUG
+						//	printf("t_set.tarefas[%d][%d].id = %c\n", i, 0, t_set.tarefas[i][0].id);
+						//	printf("t_set.tarefas[%d][%d].c  = %d\n", i, 0, t_set.tarefas[i][0].c);
+						//	printf("t_set.tarefas[%d][%d].s  = %d\n", i, 0, t_set.tarefas[i][0].s);
+						//	printf("t_set.tarefas[%d][%d].p  = %d\n", i, 0, t_set.tarefas[i][0].p);
+						//	printf("t_set.tarefas[%d][%d].sc = %d\n", i, 0, t_set.tarefas[i][0].sched);
+						//	printf("Grade [%u]: ",tempo);
+						//	printf("%s\n\n",grade);
+						//#endif
 				}
 				if (t_set.tarefas[i].size() <= 0) {
 					// Se nao existem mais tarefas nessa prioridade, pular para proxima
@@ -151,6 +166,14 @@ int main() {
 
 		/* Inicia nova leitura... */
 		scanf("%u",&num_tarefas);
+
+        // Limpa dados
+        espera.clear();
+        for (i=0;i<MIN_PRIORIDADE-1;++i) {
+            t_set.tarefas[i].clear();
+        }
+        sp_temp = 0;
+        memset(grade, 0, strlen(grade));
 	}
 	return 0;
 }
