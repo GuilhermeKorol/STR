@@ -5,7 +5,7 @@
 #define MAX_TAREFAS    26
 #define MAX_GRADE      8192
 #define MIN_PRIORIDADE 32
-#define DEBUG
+// #define DEBUG
 
 typedef struct {
 	char	   id;
@@ -108,7 +108,6 @@ int main() {
 						}
 						else {
 							// Se for sched_rr
-							// if (t_set.tarefas[i][j].s <= tempo) {
 							if (t_set.tarefas[i][0].s <= tempo) {
 								// Tarefa j ganha cpu
 								grade[tempo++] = t_set.tarefas[i][0].id;
@@ -135,7 +134,6 @@ int main() {
 							printf("Grade [%u]: ",tempo);
 							printf("%s\n\n",grade);
 						#endif
-					// }
 				}
 				if (t_set.tarefas[i].size() <= 0) {
 					// Se nao existem mais tarefas nessa prioridade, pular para proxima
