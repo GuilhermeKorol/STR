@@ -119,10 +119,14 @@ int main() {
 					if (tempo >= espera[j].s) {
 						sp_temp = espera[j].p-1;
 						// t_set.tarefas[sp_temp].push_back(espera[j]);
-						if (espera[j].sched == 2) {
+						if (espera[j].sched == 2 && t_set.tarefas[sp_temp].size() < 2) {
 							// std::rotate(t_set.tarefas[sp_temp].begin(), t_set.tarefas[sp_temp].begin()+1, t_set.tarefas[sp_temp].end());
-							t_set.tarefas[sp_temp].insert(t_set.tarefas[sp_temp].begin(),espera[j]);
-						} else {
+							t_set.tarefas[sp_temp].insert(t_set.tarefas[sp_temp].begin(), espera[j]);
+						}
+						// else if (espera[j].sched == 2 && t_set.tarefas[sp_temp].size() < 3) {
+						// 	t_set.tarefas[sp_temp].insert(t_set.tarefas[sp_temp].begin()+1,espera[j]);
+						// }
+						else {
 							t_set.tarefas[sp_temp].push_back(espera[j]);
 						}
 						#ifdef DEBUG
