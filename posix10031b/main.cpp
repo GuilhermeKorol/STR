@@ -6,7 +6,7 @@
 #define MAX_TAREFAS    26
 #define MAX_GRADE      8192
 #define MIN_PRIORIDADE 32
-#define DEBUG
+// #define DEBUG
 
 // SCHED_FIFO = 1
 // SCHED_RR   = 2
@@ -32,7 +32,7 @@ int main() {
 	unsigned i,j;
 	unsigned sp_temp;
 	char     grade[MAX_GRADE+1] = {0};
-    unsigned tempo = 0;
+  unsigned tempo = 0;
 
 	/* Inicia leitura... */
 	scanf("%u",&num_tarefas);
@@ -112,13 +112,19 @@ int main() {
 					#ifdef DEBUG
 						printf("Nao incrementando tempo por falta de tarefas prontas\n");
 						printf("i = %d | tempo = %d\n", i, tempo);
-						if (tempo > 20) exit(1);
 					#endif
 				}
 				for(j=0; j < espera.size(); ++j) {
+				// Verifica se tem tarefas entrando
 					if (tempo >= espera[j].s) {
 						sp_temp = espera[j].p-1;
-						t_set.tarefas[sp_temp].push_back(espera[j]);
+						// t_set.tarefas[sp_temp].push_back(espera[j]);
+						if (espera[j].sched == 2) {
+							// std::rotate(t_set.tarefas[sp_temp].begin(), t_set.tarefas[sp_temp].begin()+1, t_set.tarefas[sp_temp].end());
+							t_set.tarefas[sp_temp].insert(t_set.tarefas[sp_temp].begin(),espera[j]);
+						} else {
+							t_set.tarefas[sp_temp].push_back(espera[j]);
+						}
 						#ifdef DEBUG
 							printf("tarefa %c entrou em %d\n", t_set.tarefas[sp_temp].end()->id, tempo);
 							printf("espara.size() = %ld\n", espera.size());
@@ -158,9 +164,7 @@ int main() {
 								if (t_set.tarefas[i][0].c == 0) {
 									t_set.tarefas[i].erase(t_set.tarefas[i].begin());
 									tarefas_executando--;
-								}
-								// ASSUMINDO TIME SLICE = 1 UT
-								else {
+								} else { // ASSUMINDO TIME SLICE = 1 UT
 									// Tarefa j para o final do vetor
 									std::rotate(t_set.tarefas[i].begin(), t_set.tarefas[i].begin()+1, t_set.tarefas[i].end());
 								}
